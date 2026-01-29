@@ -1,0 +1,657 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>LinkedIn Tone & Style | Pretzl</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --card: rgba(255,255,255,.04);
+      --card-hover: rgba(255,255,255,.06);
+      --stroke: rgba(255,255,255,.08);
+      --stroke-focus: rgba(255,255,255,.18);
+      --text: rgba(255,255,255,.92);
+      --muted: rgba(255,255,255,.55);
+      
+      /* Pretzl accent colors */
+      --accent-blue: #3b82f6;
+      --accent-red: #ef4444;
+      --accent-yellow: #eab308;
+      
+      --shadow: 0 24px 80px rgba(0,0,0,.6);
+      --font-display: 'Space Mono', monospace;
+      --font-body: 'DM Sans', sans-serif;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    html, body { min-height: 100%; }
+    
+    body {
+      font-family: var(--font-body);
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Parallax background */
+    .parallax {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .layer {
+      position: absolute;
+      inset: -20%;
+      will-change: transform;
+    }
+    .layer-back {
+      background-image:
+        radial-gradient(900px 700px at 15% 25%, rgba(59,130,246,.12), transparent 50%),
+        radial-gradient(800px 600px at 85% 20%, rgba(239,68,68,.08), transparent 50%),
+        radial-gradient(1000px 800px at 50% 85%, rgba(234,179,8,.06), transparent 55%);
+    }
+    .layer-mid {
+      background-image:
+        radial-gradient(600px 400px at 30% 70%, rgba(59,130,246,.04), transparent 50%),
+        radial-gradient(500px 350px at 75% 60%, rgba(239,68,68,.03), transparent 50%);
+    }
+    .layer-front {
+      background: 
+        linear-gradient(to bottom, transparent 0%, rgba(10,10,15,.4) 50%, rgba(10,10,15,.95) 100%);
+    }
+    /* Noise texture overlay */
+    .noise {
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      opacity: .35;
+      pointer-events: none;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+    }
+
+    /* Hero */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 20px;
+    }
+    .hero-card {
+      width: min(680px, 100%);
+      background: var(--card);
+      border: 1px solid var(--stroke);
+      border-radius: 20px;
+      padding: 40px 36px;
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.12), transparent);
+    }
+
+    .logo {
+      font-family: var(--font-display);
+      font-size: 12px;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(28px, 4vw, 42px);
+      font-weight: 700;
+      letter-spacing: -.02em;
+      line-height: 1.15;
+      margin-bottom: 16px;
+    }
+    .sub {
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.6;
+      margin-bottom: 32px;
+      max-width: 480px;
+    }
+
+    .identity {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+    @media (max-width: 600px) {
+      .identity { grid-template-columns: 1fr; }
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    input[type="text"],
+    input[type="email"],
+    textarea,
+    .other {
+      width: 100%;
+      margin-top: 8px;
+      padding: 14px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--stroke);
+      background: rgba(0,0,0,.25);
+      color: var(--text);
+      font-family: var(--font-body);
+      font-size: 15px;
+      outline: none;
+      transition: border-color .2s, background .2s;
+    }
+    input:focus, textarea:focus {
+      border-color: var(--stroke-focus);
+      background: rgba(0,0,0,.35);
+    }
+    textarea { resize: vertical; min-height: 100px; }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 24px;
+      border-radius: 10px;
+      border: 1px solid var(--stroke);
+      text-decoration: none;
+      color: var(--text);
+      background: rgba(255,255,255,.06);
+      font-weight: 500;
+      font-size: 15px;
+      transition: all .2s;
+    }
+    .cta:hover {
+      background: rgba(255,255,255,.1);
+      border-color: var(--stroke-focus);
+    }
+    .cta::after {
+      content: '↓';
+      font-size: 14px;
+      opacity: .6;
+    }
+
+    /* Content panels */
+    .content { padding-bottom: 100px; }
+    
+    .panel {
+      width: min(720px, 92vw);
+      margin: 32px auto;
+      padding: 32px;
+      border-radius: 20px;
+      border: 1px solid var(--stroke);
+      background: var(--card);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(12px);
+      position: relative;
+    }
+    .panel::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 24px;
+      right: 24px;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent);
+    }
+
+    .panel h2 {
+      font-family: var(--font-display);
+      font-size: clamp(17px, 2vw, 20px);
+      font-weight: 700;
+      letter-spacing: -.01em;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .panel h2::before {
+      content: attr(data-num);
+      font-size: 11px;
+      padding: 4px 8px;
+      background: rgba(59,130,246,.15);
+      color: var(--accent-blue);
+      border-radius: 4px;
+      font-weight: 600;
+    }
+    .panel p {
+      color: var(--muted);
+      margin-bottom: 20px;
+      font-size: 15px;
+    }
+
+    /* Choices */
+    .choices {
+      display: grid;
+      gap: 10px;
+    }
+    .choices label {
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+      padding: 16px;
+      border-radius: 12px;
+      border: 1px solid var(--stroke);
+      background: rgba(0,0,0,.2);
+      color: var(--text);
+      font-size: 15px;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .choices label:hover {
+      background: rgba(0,0,0,.3);
+      border-color: var(--stroke-focus);
+    }
+    .choices input[type="radio"],
+    .choices input[type="checkbox"] {
+      margin-top: 2px;
+      width: 18px;
+      height: 18px;
+      accent-color: var(--accent-blue);
+      cursor: pointer;
+    }
+
+    .inline {
+      display: flex !important;
+      align-items: center !important;
+      gap: 12px !important;
+    }
+    .inline span {
+      min-width: 60px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .inline .other {
+      margin-top: 0;
+      flex: 1;
+    }
+
+    /* Slider */
+    .slider input[type="range"] {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255,255,255,.1);
+      appearance: none;
+      cursor: pointer;
+    }
+    .slider input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--accent-blue);
+      border: 2px solid var(--bg);
+      box-shadow: 0 2px 8px rgba(0,0,0,.4);
+    }
+    .slider-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .slider-readout {
+      margin-top: 16px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .slider-readout strong {
+      color: var(--accent-blue);
+      font-size: 24px;
+      font-family: var(--font-display);
+    }
+
+    .muted { color: var(--muted); }
+
+    /* Submit */
+    .submit-row {
+      display: flex;
+      gap: 16px;
+      align-items: center;
+      margin-top: 24px;
+      flex-wrap: wrap;
+    }
+    button {
+      padding: 14px 28px;
+      border-radius: 10px;
+      border: none;
+      background: var(--accent-blue);
+      color: white;
+      font-family: var(--font-body);
+      font-weight: 600;
+      font-size: 15px;
+      cursor: pointer;
+      transition: all .2s;
+    }
+    button:hover {
+      background: #2563eb;
+      transform: translateY(-1px);
+    }
+    button:disabled {
+      opacity: .5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    .status {
+      color: var(--muted);
+      font-size: 14px;
+      min-height: 22px;
+    }
+    .status.success { color: #22c55e; }
+    .status.error { color: var(--accent-red); }
+
+    .fineprint {
+      margin-top: 20px;
+      color: rgba(255,255,255,.35);
+      font-size: 12px;
+    }
+
+    /* Progress indicator */
+    .progress-bar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent-blue), var(--accent-red), var(--accent-yellow));
+      width: 0%;
+      z-index: 100;
+      transition: width .3s;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar" id="progressBar"></div>
+
+  <div class="parallax">
+    <div class="layer layer-back"></div>
+    <div class="layer layer-mid"></div>
+    <div class="layer layer-front"></div>
+  </div>
+  <div class="noise"></div>
+
+  <header class="hero">
+    <div class="hero-card">
+      <div class="logo">Pretzl Group</div>
+      <h1>LinkedIn Tone & Style</h1>
+      <p class="sub">
+        Quick questionnaire to help us write posts that sound like <em>you</em>—not like marketing wrote them.
+      </p>
+
+      <div class="identity">
+        <label>
+          Your name
+          <input id="respondentName" name="respondent_name" type="text" placeholder="e.g., Fiona" />
+        </label>
+        <label>
+          Email
+          <input id="respondentEmail" name="respondent_email" type="email" placeholder="name@company.com" />
+        </label>
+      </div>
+
+      <a class="cta" href="#q1">Start questionnaire</a>
+    </div>
+  </header>
+
+  <main class="content">
+    <form name="linkedin-tone" method="POST" data-netlify="true" netlify-honeypot="bot-field" id="questionnaireForm">
+      <input type="hidden" name="form-name" value="linkedin-tone" />
+      <input type="hidden" name="respondent_name" id="hiddenName" />
+      <input type="hidden" name="respondent_email" id="hiddenEmail" />
+      <p style="display:none"><input name="bot-field" /></p>
+
+      <section class="panel" id="q1">
+        <h2 data-num="01">Overall Voice Preference</h2>
+        <p>How should these posts feel overall?</p>
+        <div class="choices">
+          <label><input type="radio" name="overall_voice" value="Polished thought leadership" required> Polished thought leadership</label>
+          <label><input type="radio" name="overall_voice" value="Warm and conversational"> Warm and conversational</label>
+          <label><input type="radio" name="overall_voice" value="Personal / reflective (journal-style)"> Personal / reflective (journal-style)</label>
+          <label><input type="radio" name="overall_voice" value="A mix depending on the topic"> A mix depending on the topic</label>
+        </div>
+      </section>
+
+      <section class="panel" id="q2">
+        <h2 data-num="02">Personal Perspective</h2>
+        <p>How comfortable are you using "I" statements and personal reflections?</p>
+        <div class="choices">
+          <label><input type="radio" name="personal_perspective" value="Very comfortable — often" required> Very comfortable — often</label>
+          <label><input type="radio" name="personal_perspective" value="Somewhat comfortable — occasionally"> Somewhat comfortable — occasionally</label>
+          <label><input type="radio" name="personal_perspective" value="Prefer to keep it more formal and less personal"> Prefer to keep it more formal and less personal</label>
+        </div>
+      </section>
+
+      <section class="panel" id="q3">
+        <h2 data-num="03">Tone Energy</h2>
+        <p>What tone feels most like you?</p>
+        <div class="choices">
+          <label><input type="radio" name="tone_energy" value="Calm and thoughtful" required> Calm and thoughtful</label>
+          <label><input type="radio" name="tone_energy" value="Confident and inspiring"> Confident and inspiring</label>
+          <label><input type="radio" name="tone_energy" value="Direct and business-focused"> Direct and business-focused</label>
+          <label><input type="radio" name="tone_energy" value="Friendly and upbeat"> Friendly and upbeat</label>
+        </div>
+      </section>
+
+      <section class="panel" id="q4">
+        <h2 data-num="04">Professional vs Casual Balance</h2>
+        <p>Where should these posts land?</p>
+        <div class="slider">
+          <input type="range" min="1" max="5" value="3" name="pro_vs_casual" id="proVsCasual" />
+          <div class="slider-labels">
+            <span>Corporate / Formal</span>
+            <span>Casual / Human</span>
+          </div>
+          <div class="slider-readout">Selected: <strong id="proVsCasualVal">3</strong></div>
+        </div>
+      </section>
+
+      <section class="panel" id="q5">
+        <h2 data-num="05">Spoken Voice</h2>
+        <p>Should the writing feel like something you'd actually say out loud?</p>
+        <div class="choices">
+          <label><input type="radio" name="spoken_voice" value="Yes — very natural" required> Yes — very natural</label>
+          <label><input type="radio" name="spoken_voice" value="Somewhat polished"> Somewhat polished</label>
+          <label><input type="radio" name="spoken_voice" value="More formal and structured"> More formal and structured</label>
+        </div>
+      </section>
+
+      <section class="panel" id="q6">
+        <h2 data-num="06">Style Preference</h2>
+        <p>Which writing style do you prefer?</p>
+        <div class="choices">
+          <label><input type="radio" name="style_preference" value="Storytelling + reflection" required> Storytelling + reflection</label>
+          <label><input type="radio" name="style_preference" value="Clear business points + takeaways"> Clear business points + takeaways</label>
+          <label><input type="radio" name="style_preference" value="A blend of both"> A blend of both</label>
+        </div>
+      </section>
+
+      <section class="panel" id="q7">
+        <h2 data-num="07">Audience Lens</h2>
+        <p>Who should it feel like you're speaking to? (Select all that apply)</p>
+        <div class="choices">
+          <label><input type="checkbox" name="audience_lens" value="Prospective franchise candidates"> Prospective franchise candidates</label>
+          <label><input type="checkbox" name="audience_lens" value="Industry peers"> Industry peers</label>
+          <label><input type="checkbox" name="audience_lens" value="Internal stakeholders"> Internal stakeholders</label>
+          <label><input type="checkbox" name="audience_lens" value="Existing owner-operators"> Existing owner-operators</label>
+          <label><input type="checkbox" name="audience_lens" value="A broad LinkedIn audience"> A broad LinkedIn audience</label>
+        </div>
+      </section>
+
+      <section class="panel" id="q8">
+        <h2 data-num="08">Call-to-Action Comfort</h2>
+        <p>How direct should posts be in encouraging next steps?</p>
+        <div class="choices">
+          <label><input type="radio" name="cta_comfort" value="No CTA — just thought-sharing" required> No CTA — just thought-sharing</label>
+          <label><input type="radio" name="cta_comfort" value="Light curiosity (Worth exploring…)"> Light curiosity ("Worth exploring…")</label>
+          <label><input type="radio" name="cta_comfort" value="Clear invitation (Reach out if…)"> Clear invitation ("Reach out if…")</label>
+        </div>
+      </section>
+
+      <section class="panel" id="q9">
+        <h2 data-num="09">Topics to Emphasize</h2>
+        <p>Which themes should we lean into most? (Select all that apply)</p>
+        <div class="choices">
+          <label><input type="checkbox" name="topics_emphasize" value="Training and support"> Training and support</label>
+          <label><input type="checkbox" name="topics_emphasize" value="Community impact"> Community impact</label>
+          <label><input type="checkbox" name="topics_emphasize" value="Innovation and operational excellence"> Innovation and operational excellence</label>
+          <label><input type="checkbox" name="topics_emphasize" value="Financial opportunity / ROI"> Financial opportunity / ROI</label>
+          <label><input type="checkbox" name="topics_emphasize" value="Legacy and generational success"> Legacy and generational success</label>
+          <label><input type="checkbox" name="topics_emphasize" value="Inclusion and belonging"> Inclusion and belonging</label>
+          <label class="inline">
+            <span>Other:</span>
+            <input type="text" class="other" name="topics_other" placeholder="Optional" />
+          </label>
+        </div>
+      </section>
+
+      <section class="panel" id="q10">
+        <h2 data-num="10">Tone to Avoid</h2>
+        <p>Are there any styles you want us to avoid? (Select all that apply)</p>
+        <div class="choices">
+          <label><input type="checkbox" name="avoid_styles" value="Too salesy or promotional"> Too salesy or promotional</label>
+          <label><input type="checkbox" name="avoid_styles" value="Too casual"> Too casual</label>
+          <label><input type="checkbox" name="avoid_styles" value="Too motivational/speaker-like"> Too motivational/speaker-like</label>
+          <label><input type="checkbox" name="avoid_styles" value="Too corporate or stiff"> Too corporate or stiff</label>
+          <label><input type="checkbox" name="avoid_styles" value="Too long-winded"> Too long-winded</label>
+          <label class="inline">
+            <span>Other:</span>
+            <input type="text" class="other" name="avoid_other" placeholder="Optional" />
+          </label>
+        </div>
+      </section>
+
+      <section class="panel" id="q11">
+        <h2 data-num="11">Voice Qualities</h2>
+        <p>If someone read these posts, what 2–3 qualities should come through?</p>
+        <textarea name="voice_qualities" rows="4" placeholder="e.g., credible, approachable, thoughtful"></textarea>
+      </section>
+
+      <section class="panel" id="q12">
+        <h2 data-num="12">Length Preference</h2>
+        <p>What post length feels best?</p>
+        <div class="choices">
+          <label><input type="radio" name="length_preference" value="Short and punchy" required> Short and punchy</label>
+          <label><input type="radio" name="length_preference" value="Medium with breathing room"> Medium with breathing room</label>
+          <label><input type="radio" name="length_preference" value="Longer reflective posts"> Longer reflective posts</label>
+        </div>
+      </section>
+
+      <section class="panel" id="q13">
+        <h2 data-num="13">Example Posts</h2>
+        <p>Paste links to posts that match the tone you want (yours or others). Optional.</p>
+        <textarea name="example_links" rows="4" placeholder="Paste URLs here..."></textarea>
+      </section>
+
+      <section class="panel" id="q14">
+        <h2 data-num="14">Final Notes</h2>
+        <p>Anything else we should know about your voice, boundaries, or preferences?</p>
+        <textarea name="final_notes" rows="4" placeholder="Anything else..."></textarea>
+
+        <div class="submit-row">
+          <button type="submit" id="submitBtn">Submit</button>
+          <div id="status" class="status" aria-live="polite"></div>
+        </div>
+        <p class="fineprint">Your responses help us write content that sounds like you.</p>
+      </section>
+    </form>
+  </main>
+
+  <script>
+    // Sync hero inputs to hidden form fields
+    const nameInput = document.getElementById('respondentName');
+    const emailInput = document.getElementById('respondentEmail');
+    const hiddenName = document.getElementById('hiddenName');
+    const hiddenEmail = document.getElementById('hiddenEmail');
+
+    nameInput.addEventListener('input', () => hiddenName.value = nameInput.value);
+    emailInput.addEventListener('input', () => hiddenEmail.value = emailInput.value);
+
+    // Slider readout
+    const slider = document.getElementById('proVsCasual');
+    const sliderVal = document.getElementById('proVsCasualVal');
+    slider.addEventListener('input', () => sliderVal.textContent = slider.value);
+
+    // Progress bar
+    const progressBar = document.getElementById('progressBar');
+    const panels = document.querySelectorAll('.panel');
+    
+    function updateProgress() {
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      const progress = Math.min((scrollTop / docHeight) * 100, 100);
+      progressBar.style.width = progress + '%';
+    }
+    window.addEventListener('scroll', updateProgress);
+
+    // Parallax effect
+    const layerBack = document.querySelector('.layer-back');
+    const layerMid = document.querySelector('.layer-mid');
+    
+    window.addEventListener('scroll', () => {
+      const y = window.scrollY;
+      layerBack.style.transform = `translateY(${y * 0.1}px)`;
+      layerMid.style.transform = `translateY(${y * 0.05}px)`;
+    });
+
+    // Form submission handling
+    const form = document.getElementById('questionnaireForm');
+    const submitBtn = document.getElementById('submitBtn');
+    const status = document.getElementById('status');
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      submitBtn.disabled = true;
+      status.textContent = 'Submitting...';
+      status.className = 'status';
+
+      try {
+        const formData = new FormData(form);
+        
+        const response = await fetch('/', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          body: new URLSearchParams(formData).toString()
+        });
+
+        if (response.ok) {
+          status.textContent = '✓ Submitted successfully. Thank you!';
+          status.className = 'status success';
+          submitBtn.textContent = 'Submitted';
+        } else {
+          throw new Error('Submission failed');
+        }
+      } catch (err) {
+        status.textContent = 'Something went wrong. Please try again.';
+        status.className = 'status error';
+        submitBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
